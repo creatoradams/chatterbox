@@ -2,18 +2,34 @@
 
 Unified **Twitch + Kick + X** live chat in one color-coded feed — built for streamers.
 
-## Quick start
+## Quick start (streamers — no Node install)
+
+1. Download the portable **`Chatterbox.zip`** from [Releases](https://github.com/creatoradams/chatterbox/releases) (or build it below)
+2. Unzip anywhere
+3. Double-click **`Start Chatterbox.bat`**
+4. Open **http://127.0.0.1:3847/dashboard/** and set up your profile
+
+Bundled Node is included — streamers do not need to install Node.js.
+
+### Build the portable release (developers)
+
+```bash
+npm install
+npm run build:release
+```
+
+Output: **`release/chatterbox/`** — zip and share. Or double-click **`start.bat`** at repo root (builds on first run).
+
+### Dev mode
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open **http://127.0.0.1:3847/dashboard/** and set up your streamer profile.
-
 ## Add to OBS
 
-Chatterbox needs the **server running** in the background (`npm run dev`). The overlay connects to it for live chat.
+Chatterbox needs the **server running** in the background (`Start Chatterbox.bat` or `npm run dev`). The overlay connects to it for live chat.
 
 ### Option A — Local file (recommended)
 
@@ -65,11 +81,13 @@ $env:OBS_DIR = "C:\path\to\obs-studio\build"
 ## Scripts
 
 ```bash
-npm run dev          # start server
-npm run build:obs    # build local OBS HTML file
-npm run obs:setup    # guided OBS setup
-npm run simulate     # test messages
-npm test             # unit tests
+npm run dev              # start server (dev)
+npm run build:release    # portable folder + bundled Node
+npm run build:plugin-data # OBS plugin data bundle
+npm run build:obs        # build local OBS HTML file
+npm run obs:setup        # guided OBS setup
+npm run simulate         # test messages
+npm test                 # unit tests
 ```
 
 ## Config

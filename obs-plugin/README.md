@@ -17,7 +17,7 @@ The plugin is a thin native shell; chat connectors remain the bundled Node serve
 
 | Tool | Purpose |
 |------|---------|
-| **Node.js 20+** | Build plugin data bundle + runtime on streamer's PC |
+| **Node.js 20+** | Build plugin data bundle (streamers use bundled `node.exe`) |
 | **CMake 3.22+** | Configure plugin |
 | **Visual Studio 2022** | Compile C++ on Windows |
 | **OBS Studio dev build** | libobs + obs-frontend-api headers/libs |
@@ -61,7 +61,7 @@ Restart OBS.
 2. **Tools → Chatterbox → Add chat overlay to current scene** — inserts Browser Source
 3. Server starts automatically when OBS loads
 
-**Streamers still need Node.js 20+ installed** (v1). The plugin spawns `node chatterbox-server.cjs` in the background.
+**No separate Node install** — plugin data includes `node/node.exe`. The plugin spawns bundled Node with `chatterbox-server.cjs`. Falls back to PATH `node.exe` only if the bundle is missing.
 
 ## Menu actions
 
@@ -73,7 +73,7 @@ Restart OBS.
 
 ## Roadmap
 
-- [ ] Bundle Node runtime (no separate Node install)
+- [x] Bundle Node runtime (no separate Node install)
 - [ ] Installer script (auto-copy to OBS path)
 - [ ] macOS / Linux builds
 - [ ] Qt WebEngine settings dock inside OBS

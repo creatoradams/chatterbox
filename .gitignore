@@ -2,6 +2,7 @@ node_modules/
 dist/
 obs-plugin/build/
 obs-plugin/data/
+release/
 .env
 streamer.local.json
 config.local.json

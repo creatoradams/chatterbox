@@ -28,7 +28,16 @@ bool ServerManager::start(const std::string &data_dir)
 		return false;
 	}
 
-	std::string cmd = "node.exe \"" + server_script.string() + "\"";
+	std::filesystem::path node_exe =
+		std::filesystem::path(data_dir) / "node" / "node.exe";
+	if (!std::filesystem::exists(node_exe)) {
+		node_exe = "node.exe";
+		blog(LOG_WARNING,
+		     "[chatterbox] bundled node.exe not found, trying PATH");
+	}
+
+	std::string cmd = "\"" + node_exe.string() + "\" \"" +
+			  server_script.string() + "\"";
 
 	STARTUPINFOA si = {};
 	si.cb = sizeof(si);
@@ -54,7 +63,8 @@ bool ServerManager::start(const std::string &data_dir)
 		data_dir.c_str(), &si, &pi);
 
 	if (!ok) {
-		blog(LOG_ERROR, "[chatterbox] failed to start server (is Node.js installed?)");
+		blog(LOG_ERROR,
+		     "[chatterbox] failed to start server — rebuild plugin data (npm run build:plugin-data)");
 		return false;
 	}
 
