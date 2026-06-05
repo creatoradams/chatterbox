@@ -1,5 +1,7 @@
 node_modules/
 dist/
+obs-plugin/build/
+obs-plugin/data/
 .env
 streamer.local.json
 config.local.json

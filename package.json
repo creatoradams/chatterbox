@@ -10,6 +10,7 @@
     "build": "tsc --noEmit",
     "test": "node --import tsx --test test/**/*.test.ts",
     "build:obs": "node scripts/build-obs-local.mjs",
+    "build:plugin-data": "node scripts/bundle-plugin-data.mjs",
     "obs:setup": "npm run build:obs && powershell -ExecutionPolicy Bypass -File obs/setup-obs.ps1"
   },
   "engines": {
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@types/node": "^22.19.0",
     "@types/ws": "^8.18.1",
+    "esbuild": "^0.25.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }

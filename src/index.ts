@@ -27,9 +27,9 @@ ws.attach(server, hub);
 const { host, port } = getListenConfig();
 
 server.listen(port, host, async () => {
-  console.log(`Unified Chat Aggregator running at http://${host}:${port}`);
+  console.log(`Chatterbox running at http://${host}:${port}`);
   console.log(`  Dashboard: http://${host}:${port}/dashboard/`);
-  console.log(`  OBS overlay: http://${host}:${port}/overlay/`);
+  console.log(`  OBS overlay: http://${host}:${port}/overlay/obs`);
 
   if (profile) {
     await connectors.start(profile);

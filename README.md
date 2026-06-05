@@ -41,6 +41,19 @@ View → Docks → Custom Browser Docks → URL: `http://127.0.0.1:3847/dashboar
 
 Run `npm run obs:setup` for a guided walkthrough.
 
+## OBS hybrid plugin (C++)
+
+Native OBS plugin that auto-starts the server and adds the overlay from **Tools → Chatterbox**.
+
+See **[obs-plugin/README.md](obs-plugin/README.md)** for build instructions (requires OBS dev SDK + Visual Studio).
+
+```powershell
+npm run build:plugin-data
+cd obs-plugin
+$env:OBS_DIR = "C:\path\to\obs-studio\build"
+.\build.ps1
+```
+
 ## URLs
 
 | Page | URL |

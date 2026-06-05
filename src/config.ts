@@ -4,7 +4,23 @@ import { fileURLToPath } from "node:url";
 import { randomUUID } from "node:crypto";
 import type { ServerConfig } from "./types.js";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+function resolveBundledRoot(): string {
+  const fromEnv = process.env.CHATTERBOX_DATA_DIR?.trim();
+  if (fromEnv) return fromEnv;
+
+  const entry = process.argv[1];
+  if (entry?.includes("chatterbox-server")) {
+    return dirname(entry);
+  }
+
+  if (typeof __dirname !== "undefined") {
+    return __dirname;
+  }
+
+  return join(dirname(fileURLToPath(import.meta.url)), "..");
+}
+
+const ROOT = resolveBundledRoot();
 
 function loadJsonFile<T>(filename: string, fallback: T): T {
   const path = join(ROOT, filename);
