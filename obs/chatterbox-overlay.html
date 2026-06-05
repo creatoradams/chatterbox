@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chatterbox — OBS Overlay</title>
+  <style>
+:root {
+  --bg: #0a0a0a;
+  --row-bg: #141414;
+  --text: #ffffff;
+  --gold: #d4a017;
+  --gold-glow: rgba(212, 160, 23, 0.45);
+  --kick: #53fc18;
+  --kick-glow: rgba(83, 252, 24, 0.35);
+  --twitch: #9146ff;
+  --twitch-glow: rgba(145, 70, 255, 0.35);
+  --x-label: #e7e9ea;
+  --x-bg: #2f3336;
+  --font-scale: 1;
+  --font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-family);
+  font-size: calc(16px * var(--font-scale));
+  line-height: 1.45;
+  overflow: hidden;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  min-height: 100vh;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.header {
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--gold);
+  text-align: center;
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+
+.header-title {
+  font-size: calc(1.05rem * var(--font-scale));
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.header-tagline {
+  margin-top: 4px;
+  font-size: calc(0.85rem * var(--font-scale));
+  opacity: 0.85;
+}
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  max-height: calc(100vh - 80px);
+  scrollbar-width: none;
+}
+
+.feed::-webkit-scrollbar {
+  display: none;
+}
+
+.message {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--row-bg);
+  border-radius: 10px;
+  padding: 10px 12px;
+  animation: fadeIn 0.25s ease;
+}
+
+.message.mention {
+  border-left: 3px solid var(--gold);
+  box-shadow: inset 3px 0 8px var(--gold-glow);
+}
+
+.message.from-streamer {
+  opacity: 0.65;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: calc(0.75rem * var(--font-scale));
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pill-kick {
+  background: rgba(83, 252, 24, 0.12);
+  color: var(--kick);
+  border: 1px solid var(--kick);
+  box-shadow: 0 0 10px var(--kick-glow);
+}
+
+.pill-twitch {
+  background: rgba(145, 70, 255, 0.12);
+  color: var(--twitch);
+  border: 1px solid var(--twitch);
+  box-shadow: 0 0 10px var(--twitch-glow);
+}
+
+.pill-x {
+  background: var(--x-bg);
+  color: var(--x-label);
+  border: 1px solid #536471;
+}
+
+.pill-icon {
+  font-weight: 800;
+  font-size: calc(0.85rem * var(--font-scale));
+}
+
+.body {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.username {
+  font-size: calc(1.15rem * var(--font-scale));
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.username-kick {
+  color: var(--kick);
+}
+
+.username-twitch {
+  color: var(--twitch);
+}
+
+.username-x {
+  color: var(--x-label);
+}
+
+.text {
+  color: var(--text);
+  word-break: break-word;
+}
+
+.badge {
+  display: inline-block;
+  font-size: calc(0.65rem * var(--font-scale));
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 4px;
+  vertical-align: middle;
+  letter-spacing: 0.04em;
+}
+
+.badge-mod {
+  background: #00ad03;
+  color: #fff;
+}
+
+.badge-vip {
+  background: #e005a9;
+  color: #fff;
+}
+
+.badge-sub {
+  background: #9146ff;
+  color: #fff;
+}
+
+.empty {
+  opacity: 0.5;
+  text-align: center;
+  padding: 24px;
+  font-size: calc(0.95rem * var(--font-scale));
+}
+
+    #obs-error {
+      position: fixed; bottom: 8px; left: 8px; right: 8px;
+      background: rgba(180, 30, 30, 0.9); color: #fff;
+      padding: 8px 12px; border-radius: 6px; font-size: 13px;
+      z-index: 9999; text-align: center;
+    }
+    #obs-error.hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div id="obs-error" class="hidden"></div>
+  <div id="app">
+    <header id="header" class="header hidden">
+      <div id="header-title" class="header-title"></div>
+      <div id="header-tagline" class="header-tagline hidden"></div>
+    </header>
+    <div id="feed" class="feed">
+      <div class="empty">Connecting to Chatterbox…</div>
+    </div>
+  </div>
+  <script>
+/* OBS-compatible overlay — no ES modules, works in OBS Browser Source CEF */
+(function () {
+  "use strict";
+
+  function connectWs(handlers) {
+    var ws = null;
+    var closed = false;
+    var retryMs = 1000;
+
+    function connect() {
+      var SERVER = "127.0.0.1:3847";
+      var protocol = "ws:";
+      var wsHost = SERVER;
+      try {
+        ws = new WebSocket(protocol + "//" + wsHost + "/ws");
+      } catch (e) {
+        showError("WebSocket failed — is the server running?");
+        setTimeout(connect, retryMs);
+        return;
+      }
+
+      ws.onopen = function () {
+        retryMs = 1000;
+        hideError();
+        handlers.onOpen && handlers.onOpen();
+      };
+
+      ws.onmessage = function (event) {
+        try {
+          handlers.onMessage && handlers.onMessage(JSON.parse(event.data));
+        } catch (e) { /* ignore */ }
+      };
+
+      ws.onclose = function () {
+        showError("Disconnected — retrying…");
+        handlers.onClose && handlers.onClose();
+        if (!closed) {
+          setTimeout(connect, retryMs);
+          retryMs = Math.min(retryMs * 1.5, 10000);
+        }
+      };
+
+      ws.onerror = function () {
+        if (ws) ws.close();
+      };
+    }
+
+    connect();
+    return {
+      close: function () {
+        closed = true;
+        if (ws) ws.close();
+      },
+    };
+  }
+
+  function showError(msg) {
+    var el = document.getElementById("obs-error");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.remove("hidden");
+  }
+
+  function hideError() {
+    var el = document.getElementById("obs-error");
+    if (el) el.classList.add("hidden");
+  }
+
+  var feed = document.getElementById("feed");
+  var header = document.getElementById("header");
+  var headerTitle = document.getElementById("header-title");
+  var headerTagline = document.getElementById("header-tagline");
+  var rendered = {};
+
+  if (!feed) return;
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function pillLabel(platform) {
+    if (platform === "kick") return { icon: "K", label: "Kick", cls: "pill-kick" };
+    if (platform === "twitch") return { icon: "T", label: "Twitch", cls: "pill-twitch" };
+    return { icon: "X", label: "X", cls: "pill-x" };
+  }
+
+  function usernameStyle(msg) {
+    if (msg.color && /^#?[0-9a-fA-F]{3,8}$/.test(msg.color)) {
+      var c = msg.color.indexOf("#") === 0 ? msg.color : "#" + msg.color;
+      return ' style="color:' + c + '"';
+    }
+    return "";
+  }
+
+  function badgesHtml(badges) {
+    if (!badges || !badges.length) return "";
+    var html = "";
+    for (var i = 0; i < badges.length; i++) {
+      var b = badges[i];
+      html += '<span class="badge badge-' + b.toLowerCase() + '">' + b + "</span>";
+    }
+    return html;
+  }
+
+  function applyProfile(profile) {
+    if (!profile) {
+      if (header) header.classList.add("hidden");
+      document.documentElement.style.setProperty("--font-scale", "1");
+      return;
+    }
+    var scale = (profile.overlay && profile.overlay.fontScale) || 1;
+    document.documentElement.style.setProperty("--font-scale", String(scale));
+
+    if (header && profile.overlay && profile.overlay.showHeader) {
+      header.classList.remove("hidden");
+      var title =
+        (profile.overlay.headerTitle && profile.overlay.headerTitle.trim()) ||
+        profile.displayName + "'s chat";
+      if (headerTitle) headerTitle.textContent = title;
+      if (headerTagline) {
+        if (profile.tagline) {
+          headerTagline.textContent = profile.tagline;
+          headerTagline.classList.remove("hidden");
+        } else {
+          headerTagline.classList.add("hidden");
+        }
+      }
+    } else if (header) {
+      header.classList.add("hidden");
+    }
+  }
+
+  function renderMessage(msg) {
+    if (rendered[msg.id]) return;
+    rendered[msg.id] = true;
+
+    var pill = pillLabel(msg.platform);
+    var row = document.createElement("article");
+    row.className = "message";
+    if (msg.mentionsStreamer) row.className += " mention";
+    if (msg.isFromStreamer) row.className += " from-streamer";
+    row.setAttribute("data-id", msg.id);
+
+    row.innerHTML =
+      '<span class="pill ' + pill.cls + '">' +
+      '<span class="pill-icon">' + pill.icon + "</span>" +
+      pill.label +
+      "</span>" +
+      '<div class="body">' +
+      '<span class="username username-' + msg.platform + '"' + usernameStyle(msg) + ">" +
+      escapeHtml(msg.username) +
+      "</span>" +
+      badgesHtml(msg.badges) +
+      '<span class="text">' + escapeHtml(msg.text) + "</span>" +
+      "</div>";
+
+    feed.appendChild(row);
+    while (feed.children.length > 150) {
+      var first = feed.firstElementChild;
+      if (first) {
+        delete rendered[first.getAttribute("data-id") || ""];
+        feed.removeChild(first);
+      }
+    }
+    feed.scrollTop = feed.scrollHeight;
+  }
+
+  function renderAll(messages) {
+    feed.innerHTML = "";
+    rendered = {};
+    if (!messages || !messages.length) {
+      feed.innerHTML = '<div class="empty">Waiting for chat…</div>';
+      return;
+    }
+    for (var i = 0; i < messages.length; i++) renderMessage(messages[i]);
+  }
+
+  function handleEvent(payload) {
+    if (payload.type === "profile") applyProfile(payload.data);
+    if (payload.type === "messages") renderAll(payload.data || []);
+    if (payload.type === "message") {
+      var empty = feed.querySelector(".empty");
+      if (empty) feed.innerHTML = "";
+      renderMessage(payload.data);
+    }
+    if (payload.type === "buffer_cleared") renderAll([]);
+  }
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "http://" + SERVER + "/api/profile");
+  xhr.onload = function () {
+    try {
+      applyProfile(JSON.parse(xhr.responseText).profile);
+    } catch (e) { /* ignore */ }
+  };
+  xhr.send();
+
+  connectWs({ onMessage: handleEvent });
+})();
+
+  </script>
+</body>
+</html>

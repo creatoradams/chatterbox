@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+streamer.local.json
+config.local.json
+*.log
+.DS_Store

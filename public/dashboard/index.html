@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unified Chat — Dashboard</title>
+  <link rel="stylesheet" href="/dashboard/dashboard.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <h1>Chatterbox</h1>
+      <p class="subtitle">Configure your Twitch, Kick, and X feeds in one place.</p>
+    </header>
+
+    <section id="profile-summary" class="card summary hidden">
+      <div>
+        <div class="summary-label">Active streamer</div>
+        <div id="summary-name" class="summary-name">—</div>
+      </div>
+      <div class="summary-actions">
+        <button id="btn-copy-overlay" class="btn secondary" type="button">Copy OBS URL</button>
+        <button id="btn-reset" class="btn secondary danger" type="button">Reset profile</button>
+      </div>
+    </section>
+
+    <section id="wizard" class="card wizard hidden">
+      <h2>Welcome — set up your profile</h2>
+      <p class="hint">This app listens only to <strong>your</strong> channels. Complete each step to go live.</p>
+      <div class="steps">
+        <div class="step active" data-step="1">
+          <label for="wiz-name">Display name</label>
+          <input id="wiz-name" type="text" placeholder="Nick" />
+        </div>
+        <div class="step" data-step="2">
+          <label for="wiz-twitch">Your Twitch channel</label>
+          <input id="wiz-twitch" type="text" placeholder="your_channel" />
+        </div>
+        <div class="step" data-step="3">
+          <label for="wiz-kick">Your Kick slug</label>
+          <input id="wiz-kick" type="text" placeholder="your_kick_slug" />
+        </div>
+        <div class="step" data-step="4">
+          <label for="wiz-x">X broadcast URL <span class="optional">(when live)</span></label>
+          <input id="wiz-x" type="url" placeholder="https://x.com/i/broadcasts/..." />
+        </div>
+      </div>
+      <div class="wizard-actions">
+        <button id="wiz-back" class="btn secondary" type="button">Back</button>
+        <button id="wiz-next" class="btn primary" type="button">Next</button>
+        <button id="wiz-save" class="btn primary hidden" type="button">Save profile</button>
+      </div>
+    </section>
+
+    <section id="editor" class="card hidden">
+      <h2>Your streamer profile</h2>
+      <form id="profile-form">
+        <div class="grid">
+          <label>Display name<input name="displayName" required /></label>
+          <label>Tagline<input name="tagline" placeholder="Optional subtitle" /></label>
+          <label>Twitch channel<input name="twitchChannel" required /></label>
+          <label>Kick slug<input name="kickSlug" required /></label>
+          <label>X broadcast URL<input name="broadcastUrl" type="url" placeholder="https://x.com/i/broadcasts/..." /></label>
+          <label>Header title<input name="headerTitle" placeholder="Defaults to '{name}'s chat'" /></label>
+          <label>Font scale<input name="fontScale" type="number" min="0.8" max="1.6" step="0.1" value="1" /></label>
+          <label class="checkbox"><input name="showHeader" type="checkbox" checked /> Show branded header on overlay</label>
+          <label class="checkbox"><input name="highlightMentions" type="checkbox" checked /> Highlight @mentions</label>
+          <label class="checkbox"><input name="hideOwnMessages" type="checkbox" /> Hide your own messages</label>
+        </div>
+        <fieldset class="platform-toggles">
+          <legend>Enabled platforms</legend>
+          <label class="checkbox"><input name="twitchEnabled" type="checkbox" checked /> Twitch</label>
+          <label class="checkbox"><input name="kickEnabled" type="checkbox" checked /> Kick</label>
+          <label class="checkbox"><input name="xEnabled" type="checkbox" checked /> X (when live)</label>
+        </fieldset>
+        <label>Aliases <span class="optional">(comma-separated, for mention detection)</span>
+          <input name="aliases" placeholder="nick, your_twitch, your_kick" />
+        </label>
+        <label>Highlight keywords <span class="optional">(comma-separated)</span>
+          <input name="highlightKeywords" placeholder="!discord, !socials" />
+        </label>
+        <label>Blocked users <span class="optional">(comma-separated)</span>
+          <input name="blockedUsers" />
+        </label>
+        <label>Blocked words <span class="optional">(comma-separated)</span>
+          <input name="blockedWords" />
+        </label>
+        <div class="actions">
+          <button class="btn primary" type="submit">Save profile &amp; reconnect</button>
+          <button id="btn-clear" class="btn secondary" type="button">Clear chat buffer</button>
+          <button id="btn-reconnect" class="btn secondary" type="button">Reconnect all</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Connection status</h2>
+      <div id="status-grid" class="status-grid"></div>
+      <p class="links">
+        OBS overlay: <a id="overlay-link" href="/overlay/" target="_blank">open overlay</a>
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Live preview</h2>
+      <p class="hint">Last messages from your unified feed (same as OBS overlay).</p>
+      <div id="preview-feed" class="preview-feed empty-preview">No messages yet.</div>
+    </section>
+
+    <section class="card">
+      <h2>OBS setup</h2>
+      <ol class="obs-steps">
+        <li>In OBS, add a <strong>Browser Source</strong>.</li>
+        <li>Paste URL: <code id="obs-url">http://127.0.0.1:3847/overlay/obs</code> (or run <code>npm run obs:setup</code>)</li>
+        <li>Set size: <strong>450 × 900</strong> (adjust to taste).</li>
+        <li>Check <strong>Shutdown source when not visible</strong> (optional).</li>
+        <li>Enable transparent background in source properties if needed.</li>
+      </ol>
+      <p class="hint">Kick blocked? Add <code>KICK_SESSION_COOKIE</code> to your <code>.env</code> file (copy from kick.com DevTools → Application → Cookies).</p>
+    </section>
+  </div>
+  <script type="module" src="/dashboard/dashboard.js"></script>
+</body>
+</html>

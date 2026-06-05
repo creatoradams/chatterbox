@@ -1,0 +1,23 @@
+{
+  "id": "00000000-0000-4000-8000-000000000001",
+  "displayName": "YourName",
+  "tagline": "Twitch + Kick + X unified chat",
+  "platforms": {
+    "twitch": { "channel": "your_twitch_channel", "enabled": true },
+    "kick": { "slug": "your_kick_slug", "enabled": true },
+    "x": { "broadcastUrl": "https://x.com/i/broadcasts/your-broadcast-id", "enabled": true }
+  },
+  "aliases": ["yourname", "your_twitch_channel", "your_kick_slug"],
+  "overlay": {
+    "showHeader": true,
+    "headerTitle": "",
+    "fontScale": 1,
+    "highlightMentions": true,
+    "hideOwnMessages": false,
+    "highlightKeywords": []
+  },
+  "filters": {
+    "blockedUsers": [],
+    "blockedWords": []
+  }
+}

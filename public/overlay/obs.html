@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chatterbox — OBS</title>
+  <link rel="stylesheet" href="/overlay/overlay.css" />
+  <style>
+    #obs-error {
+      position: fixed;
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+      background: rgba(180, 30, 30, 0.9);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      z-index: 9999;
+      text-align: center;
+    }
+    #obs-error.hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div id="obs-error" class="hidden"></div>
+  <div id="app">
+    <header id="header" class="header hidden">
+      <div id="header-title" class="header-title"></div>
+      <div id="header-tagline" class="header-tagline hidden"></div>
+    </header>
+    <div id="feed" class="feed">
+      <div class="empty">Connecting to chat server…</div>
+    </div>
+  </div>
+  <!-- Classic script only — OBS Browser Source does not support ES modules -->
+  <script src="/overlay/overlay-standalone.js"></script>
+</body>
+</html>

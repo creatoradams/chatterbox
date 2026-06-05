@@ -1,0 +1,28 @@
+{
+  "name": "chatterbox",
+  "version": "1.0.0",
+  "description": "Chatterbox — unified Twitch + Kick + X live chat for streamers",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "simulate": "tsx src/simulate.ts",
+    "build": "tsc --noEmit",
+    "test": "node --import tsx --test test/**/*.test.ts",
+    "build:obs": "node scripts/build-obs-local.mjs",
+    "obs:setup": "npm run build:obs && powershell -ExecutionPolicy Bypass -File obs/setup-obs.ps1"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "tmi.js": "^1.8.5",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
