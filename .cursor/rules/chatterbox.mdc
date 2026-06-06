@@ -1,0 +1,45 @@
+---
+description: Chatterbox project context — paths, build, test, OBS
+alwaysApply: true
+---
+
+# Chatterbox
+
+**Repo:** `C:\Users\Nick\Projects\unified-chat-aggregator` · **GitHub:** https://github.com/creatoradams/chatterbox · **Port:** `127.0.0.1:3847`
+
+Unified Twitch + Kick + X live chat for streamers. Profile in gitignored `streamer.local.json`. OBS overlay must use classic JS (`public/overlay/overlay-standalone.js`) — no ES modules in OBS CEF.
+
+## Streamer path (no Node install)
+
+```powershell
+npm run build:release
+# → release/chatterbox/ — double-click Start Chatterbox.bat
+```
+
+Bundled `node/node.exe` (v22.22.0 from `scripts/node-version.txt`). `CHATTERBOX_DATA_DIR` set by launcher/plugin.
+
+## Dev / test
+
+```powershell
+npm run dev          # dev server
+npm run simulate     # fake chat (server must be running)
+npm test             # unit tests
+```
+
+Stop anything on port 3847 before testing portable build (`EADDRINUSE`).
+
+## OBS
+
+- Local file: `release/chatterbox/chatterbox-overlay.html` or `obs/chatterbox-overlay.html`
+- URL: `http://127.0.0.1:3847/overlay/obs`
+- Hybrid plugin: `obs-plugin/` — C++ spawns `data/node/node.exe` + `chatterbox-server.cjs`; build with `npm run build:plugin-data` then `obs-plugin/build.ps1`
+
+## Key scripts
+
+| Script | Output |
+|--------|--------|
+| `build:release` | `release/chatterbox/` portable folder |
+| `build:plugin-data` | `obs-plugin/data/` (+ bundled Node) |
+| `build:obs` | `obs/chatterbox-overlay.html` |
+
+See **AGENTS.md** for architecture, API, and connector details.
